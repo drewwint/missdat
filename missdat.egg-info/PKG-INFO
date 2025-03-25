@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: missdat
-Version: 0.1.0
+Version: 0.1.7
 Summary: A package for assessing, diagnosing, and estimating missing data
 Author-email: "Drew E. Winters, PhD." <drewEwinters@gmail.com>
 License: MIT

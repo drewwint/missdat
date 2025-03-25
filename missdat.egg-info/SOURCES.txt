@@ -2,9 +2,9 @@ LICENSE.txt
 README.md
 pyproject.toml
 missdat/__init__.py
-missdat/mod_em_fiml.py
-missdat/mod_mcar_test.py
-missdat/mod_miss_diagnostics.py
+missdat/em_fiml.py
+missdat/mcar_test.py
+missdat/miss_diagnostics.py
 missdat.egg-info/PKG-INFO
 missdat.egg-info/SOURCES.txt
 missdat.egg-info/dependency_links.txt

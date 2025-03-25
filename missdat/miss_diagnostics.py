@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-from .mod_em_fiml import em_fiml
 
 def miss_diagnostics(data):
   """

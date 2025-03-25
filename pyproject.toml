@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "missdat"
-version = "0.1.0"
+version = "0.1.7"
 description = "A package for assessing, diagnosing, and estimating missing data"
 authors = [{name = "Drew E. Winters, PhD.", email = "drewEwinters@gmail.com"}]
 license = {text = "MIT"}

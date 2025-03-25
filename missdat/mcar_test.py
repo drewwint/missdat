@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from missdat.em_fiml import em_fiml
 
 def mcar_test(data, alpha=0.05):
   """
