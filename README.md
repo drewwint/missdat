@@ -1,7 +1,7 @@
-# missdat: a package for assessing, diagnosing, and estimating missing data
+# missdat: a package for missing data diagnostics and estimating missing values
 
 ## What is missdat? 
-**missdat** is a Python package that provide usefull tools to quickly assess missing data and provide the user with informatoin on how to best address missingness to improve statistical inferences. Specifically These functions allow the user to perform missing data diagnostics, run a test to deterine if data is Missing Completely at Random (MCAR), and estimate the most likley value for that missing data point (currently only maximizing the expected values with Full Information Maximum Liklihood [FIML]). 
+**missdat** is a Python package that provide usefull tools to quickly assess missing data and provide the user with information on how to best address missingness to improve statistical inferences. Specifically These functions allow the user to perform missing data diagnostics, run a test to deterine if data is Missing Completely at Random (MCAR), and estimate the most likley value for that missing data point (currently only maximizing the expected values with Full Information Maximum Liklihood [FIML]). 
 
 References: 
 The MCAR test citation: Little, R. J. A. (1988). A test of missing completely at random for 
