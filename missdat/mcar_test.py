@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+import numpy as np
+import pandas as pd
 from missdat.em_fiml import em_fiml
 
 def mcar_test(data, alpha=0.05):
@@ -80,6 +82,10 @@ def mcar_test(data, alpha=0.05):
       from scipy.stats import chi2
   except ImportError as e:
       raise ImportError(f"Missing required package: {e.name}. Install it using `pip install {e.name}`")
+  
+  # Ensure all columns are numeric
+  if not all(data.dtypes.apply(lambda x: np.issubdtype(x, np.number))):
+      raise ValueError("Non-numeric columns detected. Please remove non-numeric columns before using this function.")
   
   # Work on a copy to leave the original dataframe unchanged.
   ddt = data.copy()

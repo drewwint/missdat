@@ -22,7 +22,7 @@ def em_fiml(data, max_iter=100, tol=1e-4):
   --------
   DataFrame
       The dataset with imputed values (MLE estimates).
-  """
+  """  
   # Require packages import checking
   try:
       import numpy as np
@@ -33,50 +33,59 @@ def em_fiml(data, max_iter=100, tol=1e-4):
 
   # Data copying
   data = data.copy()  # Avoid modifying original dataset
-  cols = data.columns
+  
+  # Ensure all columns are numeric
+  if not all(data.dtypes.apply(lambda x: np.issubdtype(x, np.number))):
+      raise ValueError("Non-numeric columns detected. Please remove non-numeric columns before using this function.")
 
-  # Initialize mean and covariance estimates
-  mean = data.mean(skipna=True)
-  cov = data.cov()
-
+  # Initialize imputation
+  means = data.mean(skipna=True)
+  data_filled = data.fillna(means)
+  
   for iteration in range(max_iter):
-      imputed_data = data.copy()
-
-      # E-step: Estimate missing values using conditional expectation
-      for i in range(data.shape[0]):  # Iterate over rows
-          missing_mask = data.iloc[i].isnull().to_numpy()  # Convert to NumPy boolean array
-          observed_mask = ~missing_mask  # Inverse mask
-
-          if missing_mask.any():  # If there are missing values in this row
-              obs_values = data.iloc[i, observed_mask].to_numpy()  # Convert observed values to NumPy array
-              obs_mean = mean[observed_mask].to_numpy()
-              obs_cov = cov.iloc[observed_mask, observed_mask].to_numpy()
-
-              # Compute conditional expectation E[X_miss | X_obs]
-              miss_mean = mean[missing_mask].to_numpy()
-              cross_cov = cov.iloc[missing_mask, observed_mask].to_numpy()
-
-              # Compute conditional mean
-              if obs_cov.shape[0] > 0:  # Ensure there are observed variables
-                  inv_obs_cov = np.linalg.pinv(obs_cov)  # Compute pseudo-inverse
-                  cond_mean = miss_mean + cross_cov @ inv_obs_cov @ (obs_values - obs_mean)
-              else:
-                  cond_mean = miss_mean  # If no observed data, use marginal mean
-
-              # Impute missing values
-              imputed_data.iloc[i, missing_mask] = cond_mean
-
-      # M-step: Update parameter estimates
-      new_mean = imputed_data.mean()
-      new_cov = imputed_data.cov()
-
-      # Check for convergence
-      if np.allclose(new_mean, mean, atol=tol) and np.allclose(new_cov, cov, atol=tol):
-          print(f"EM algorithm converged at iteration {iteration + 1}")
+      old_data = data_filled.copy()
+      
+      # M-step: update parameter estimates (mean and covariance) using the current filled dataset.
+      means = data_filled.mean()
+      cov_matrix = data_filled.cov().values  # Covariance matrix as a NumPy array
+      
+      # E-step: update missing entries based on conditional expectations.
+      for idx, row in data.iterrows():
+          if row.isnull().any():
+              # Determine the observed and missing columns by name.
+              observed_cols = row.index[row.notnull()]
+              missing_cols = row.index[~row.notnull()]
+              
+              # Get corresponding positions in the DataFrame (for the covariance matrix)
+              obs_idx = [data.columns.get_loc(col) for col in observed_cols]
+              mis_idx = [data.columns.get_loc(col) for col in missing_cols]
+              
+              # Get observed values from the current filled dataset
+              obs_vals = data_filled.loc[idx, observed_cols].values
+              
+              # Partition the mean vector
+              mu_obs = means[observed_cols].values
+              mu_mis = means[missing_cols].values
+              
+              # Partition the covariance matrix into sigma_oo and sigma_mo
+              sigma_oo = cov_matrix[np.ix_(obs_idx, obs_idx)]
+              sigma_mo = cov_matrix[np.ix_(mis_idx, obs_idx)]
+              
+              # Use pseudo-inverse for numerical stability.
+              sigma_oo_inv = np.linalg.pinv(sigma_oo)
+              
+              # Compute the conditional mean for the missing entries.
+              cond_mean = mu_mis + sigma_mo.dot(sigma_oo_inv).dot(obs_vals - mu_obs)
+              
+              # Update the filled data with the computed conditional mean.
+              data_filled.loc[idx, missing_cols] = cond_mean
+      
+      # Check for convergence: compare the relative change of the filled dataset.
+      norm_diff = np.linalg.norm(data_filled.values - old_data.values)
+      norm_old  = np.linalg.norm(old_data.values)
+      if norm_old > 0 and norm_diff / norm_old < tol:
           break
 
-      # Update estimates for next iteration
-      mean, cov = new_mean, new_cov
+  return data_filled
 
-  return imputed_data
 
