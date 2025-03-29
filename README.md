@@ -19,6 +19,7 @@ By integrating `missdat` into your data analysis workflow, you can make informed
 - Janssen, K. J., et al. (2010). Missing covariate data methods for logistic regression: a comparison of approaches in a prediction model context. *Journal of Clinical Epidemiology, 63*(7), 721–729.
 - Little, R. J. A., & Rubin, D. B. (2002). *Statistical Analysis with Missing Data*. Wiley.
 - Little, R. J. A. (1988). A test of missing completely at random for multivariate data with missing values. Journal of the American Statistical Association, 83(404), 1198-1202.
+- Morvan, M. L., & Varoquaux, G. (2024). Imputation for prediction: beware of diminishing returns. arXiv preprint arXiv:2407.19804.
 
 ### Functions
 - **miss_diagnostics**
@@ -49,6 +50,8 @@ By integrating `missdat` into your data analysis workflow, you can make informed
     - Reporting missing data diagnostics in academic publications.
     - Visualizing the correlation between missing values in different variables.
     - Assessing missingness at both the item and pattern levels to decide on appropriate imputation strategies
+
+  Reference: Enders (2010)
 
 - **mcar_test**
   A statistical test for randomness in missing data patterns using Little's MCAR test to quantitate evidence of MCAR. 
@@ -84,6 +87,8 @@ By integrating `missdat` into your data analysis workflow, you can make informed
     - Determining if missing data in a dataset is MCAR quantitatively
     - Informing how to redress missing data 
 
+  Reference: Little (1988)
+
 - **mcar_test_np**
   A non-parametric MCAR test using permutation based approach. 
   Procedure: 
@@ -104,6 +109,8 @@ By integrating `missdat` into your data analysis workflow, you can make informed
        The p-value is calculated as the proportion of permuted test statistics greater than or equal to the observed statistic.
        If p ≥ 0.05, the missingness mechanism is likely MCAR. Otherwise, the data may be Missing At Random (MAR) or Missing Not At Random (MNAR).
 
+  Reference: Janssen et al. (2010)
+
 - **em_fiml**
   A method of imputing values by maximizing the expected values using full information maximum liklihood (FIML).
   Procedure:
@@ -115,24 +122,26 @@ By integrating `missdat` into your data analysis workflow, you can make informed
     Full Information Maximum Likelihood (FIML) Imputation Using EM:
       E-Step: Expectation of Missing Values
         Iterate through each row of the dataset:
-        1. Identify missing (`missing_mask`) and observed (`observed_mask`) values.
-        2. Extract observed values and compute:
-           - Mean of observed variables (`obs_mean`).
-           - Covariance matrix of observed variables (`obs_cov`).
-        3. Compute conditional expectation of missing values:
-           - If observed data exists, apply:
-             E[X_miss | X_obs] = μ_miss + Σ_miss,obs Σ_obs⁻¹ (X_obs - μ_obs)
-           - If no observed data, use the marginal mean.
-        4. Impute missing values with these conditional expectations.
+          Identify missing (`missing_mask`) and observed (`observed_mask`) values.
+          Extract observed values from current dataset.
+          Partition overall mean vector into observed ('mu_obs') and missing ('mu_mis') parts.
+          Partition the covariance matrix into submatricies:
+             ('sigma_oo'): Covarince amove observed variables. 
+             ('sigma_mo'): Covariance between missing and observed variables..
+          Compute the psuedo-inverse of ('sigma_00') for numerical stability.
+          Compute the conditional expectation for the missing values using:
+               E[X_miss | X_obs] = μ_miss + Σ_miss,obs Σ_obs⁻¹ (X_obs - μ_obs)
+          Update the imputed dataset with these conditional expectations.
 
     M-Step: Maximization of Parameter Estimates
-       Update mean (`new_mean`) and covariance matrix (`new_cov`) using imputed data.
+       Re-estimate the mean and covariance matrix from the imputed dataset ('data_filled').
 
     Convergence Check and Iteration Control:
        Compare new estimates to previous ones.
        If changes in mean and covariance are within tolerance (`tol`), terminate early.
        Otherwise, continue iterating until `max_iter` is reached. 
 
+  Reference: Little & Rubin (2002)
 
 ### Installation
 
@@ -157,7 +166,7 @@ pip install missdat
 
 ### Usage
 ``` 
-  # Simulating data
+# Simulating data
     >>> np.random.seed(42)
     >>> data_sim = pd.DataFrame({
          "A": np.random.randn(100),
@@ -229,6 +238,13 @@ pip install missdat
         alpha                                                      0.05
         interpretation              Missing Completely at Random (MCAR)
 
+# non-parametric mcar_test_np
+    >>> mcar_test_np(data_sim)
+                            Non-Parametric MCAR Test Values
+        t                                          0.283454
+        p                                             0.323
+        interpretation  Missing Completely at Random (MCAR)
+
 # em_fiml
    >>> imp_dat = em_fiml(data_sim)
        EM algorithm converged at iteration 8
@@ -248,13 +264,24 @@ pip install missdat
 
        [100 rows x 3 columns]
 
+# miss_ind
+    >>> miss_ind(data_sim)
+            missing_indicator
+        0                   0
+        1                   0
+        2                   0
+        3                   1
+        4                   0
+        ..                ...
+        95                  0
+        96                  0
+        97                  0
+        98                  0
+        99                  1
+
+        [100 rows x 1 columns]
+
 ```
-
-## References
-
-- Enders, C. K. (2010). *Applied Missing Data Analysis*. Guilford Press.
-- Janssen, K. J., et al. (2010). Missing covariate data methods for logistic regression: a comparison of approaches in a prediction model context. *Journal of Clinical Epidemiology, 63*(7), 721–729.
-- Little, R. J. A., & Rubin, D. B. (2002). *Statistical Analysis with Missing Data*. Wiley.
 
 
 

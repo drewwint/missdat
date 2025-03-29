@@ -11,7 +11,11 @@ def mcar_test_np(data, num_permutations=1000, random_state=None):
   A permutation procedure is used: for each column, the missing-indicator is randomly permuted,
   and the test statistic is recalculated to form a null distribution. The p-value is then the proportion
   of permuted statistics that exceed or equal the observed statistic.
-  
+
+  Author
+  ------
+  Drew E. Winters <drewEwinters@gmail.com>
+
   Parameters
   ----------
   data : pandas.DataFrame

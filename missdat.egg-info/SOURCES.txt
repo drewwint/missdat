@@ -4,7 +4,9 @@ pyproject.toml
 missdat/__init__.py
 missdat/em_fiml.py
 missdat/mcar_test.py
+missdat/mcar_test_np.py
 missdat/miss_diagnostics.py
+missdat/miss_ind.py
 missdat.egg-info/PKG-INFO
 missdat.egg-info/SOURCES.txt
 missdat.egg-info/dependency_links.txt

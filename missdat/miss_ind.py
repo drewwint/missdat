@@ -13,6 +13,10 @@ def miss_ind(data):
   See: 
     Morvan, M. L., & Varoquaux, G. (2024). Imputation for prediction: beware of diminishing returns. arXiv preprint arXiv:2407.19804.
 
+  Author
+  ------
+  Drew E. Winters <drewEwinters@gmail.com>
+
   Parameters
   ----------
   data : pandas.DataFrame
