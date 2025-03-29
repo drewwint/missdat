@@ -1,7 +1,6 @@
 # missdat: a package for missing data diagnostics and estimating missing values
 
 ## Overview
-
 `missdat` is a Python package designed to assist in diagnosing and handling missing data within datasets. It provides tools for:
 
 - **Diagnosing Missing Data:** Assess the patterns and extent of missingness.
@@ -10,9 +9,8 @@
 
 By integrating `missdat` into your data analysis workflow, you can make informed decisions about handling missing data, leading to more robust statistical inferences.
 
-
 ## What is missdat? 
-**missdat** is a Python package that provide usefull tools to quickly assess missing data and provide the user with information on how to best address missingness to improve statistical inferences. Specifically These functions allow the user to perform missing data diagnostics, run a test to deterine if data is Missing Completely at Random (MCAR), and estimate the most likley value for that missing data point (currently only maximizing the expected values with Full Information Maximum Liklihood [FIML]). 
+**missdat** is a Python package that provides useful tools to quickly assess missing data and provide the user with information on how to redress missingness to improve statistical inferences. Specifically, these functions allow the user to perform missing data diagnostics, run a test to determine if data is Missing Completely at Random (MCAR), and estimate the most likely value for that missing data point (currently only maximizing the expected values with Full Information Maximum Likelihood [FIML]). 
 
 ## References
 - Enders, C. K. (2010). *Applied Missing Data Analysis*. Guilford Press.
@@ -21,29 +19,28 @@ By integrating `missdat` into your data analysis workflow, you can make informed
 - Little, R. J. A. (1988). A test of missing completely at random for multivariate data with missing values. Journal of the American Statistical Association, 83(404), 1198-1202.
 - Morvan, M. L., & Varoquaux, G. (2024). Imputation for prediction: beware of diminishing returns. arXiv preprint arXiv:2407.19804.
 
-### Functions
+## Functions
 - **miss_diagnostics**
   A function for quantitatively describing patterns of missing data.
-  Procedure:
-    Missing Value Identification:
+  - Procedure:
+    * Missing Value Identification:
       The function first identifies the missing values in the dataset and categorizes them into distinct missing patterns based on the number of missing values per participant. 
       This allows for analysis of how different participants have missing data across variables.
 
-    Pattern-Level Diagnostics:
+    * Pattern-Level Diagnostics:
       The function computes the number of participants that exhibit each missingness pattern and calculates statistics (e.g., number of missing values, proportion missing) for each missing pattern. 
       The dataset is divided into subgroups based on the missingness pattern.
 
-    Item-Level Diagnostics:
+    * Item-Level Diagnostics:
       The function calculates the number of missing values, the proportion of missing values, and the proportion of complete values for each item (variable) in the dataset. 
       These item-level statistics help assess the missingness at a granular level.
 
-     Spearman Correlation of Missingness:
+     * Spearman Correlation of Missingness:
        A Spearman correlation matrix is computed to measure the relationship between the missingness patterns of the different variables. 
        Spearman correlation is chosen because missingness is treated as a dichotomous variable (missing vs. non-missing).
 
-     Overall Missingness Statistics:
+     * Overall Missingness Statistics:
        The function calculates overall statistics on missingness, including the total proportion of missing data across the entire dataset and the overall proportion of complete data.
- 
  
   This function is particularly useful for:
     - Understanding the structure and patterns of missing data.
@@ -54,14 +51,14 @@ By integrating `missdat` into your data analysis workflow, you can make informed
   Reference: Enders (2010)
 
 - **mcar_test**
-  A statistical test for randomness in missing data patterns using Little's MCAR test to quantitate evidence of MCAR. 
-  Procedure:
-     Missing Data Pattern Identification:
+  A statistical test for randomness in missing data patterns using Little's MCAR test to quantify evidence of MCAR. 
+  - Procedure:
+     * Missing Data Pattern Identification:
        The function first identifies unique missingness patterns in the dataset 
        by converting missing values to 1 (missing) and non-missing values to 0. 
        It then creates labels for these patterns to distinguish between rows with different missingness profiles.
  
-     FIML Imputation (EM Algorithm):
+     * FIML Imputation (EM Algorithm):
        The function performs imputation on missing data using the EM (Expectation-Maximization) algorithm. 
        This algorithm uses the all included observed data (full information) to estimate the missing values. 
        It iterates through the following steps:
@@ -69,16 +66,16 @@ By integrating `missdat` into your data analysis workflow, you can make informed
         - M-step: Update the parameters (mean and covariance) based on the newly imputed values.
         - The imputed data is then used for the MCAR test.
  
-     MCAR Test Statistic Calculation:
+     * MCAR Test Statistic Calculation:
        The function calculates the Mahalanobis distance for each missingness pattern, 
        which measures how far the observed data deviates from the global mean and covariance 
        (estimated after imputation). The test statistic (X²) is the weighted sum of these distances.
  
-     Degrees of Freedom and p-value:
+     * Degrees of Freedom and p-value:
        The degrees of freedom (df) are computed based on the number of observed variables in each missingness pattern.
        The p-value is then calculated using the Chi-squared distribution.
  
-     Hypothesis Testing:
+     * Hypothesis Testing:
        The function compares the p-value with the significance level (alpha) to determine whether the data are MCAR. 
        If the p-value is greater than or equal to alpha, the null hypothesis (MCAR) is accepted, meaning that the missingness is deemed random. 
        If the p-value is smaller, the null hypothesis is rejected, indicating that the missingness may not be completely random (i.e., potentially MAR or MNAR).
@@ -90,60 +87,60 @@ By integrating `missdat` into your data analysis workflow, you can make informed
   Reference: Little (1988)
 
 - **mcar_test_np**
-  A non-parametric MCAR test using permutation based approach. 
-  Procedure: 
-     Row Mean Calculation: 
+  A non-parametric MCAR test using permutation-based approach. 
+  - Procedure: 
+     * Row Mean Calculation: 
        Computes the mean for each row, ignoring NaN values.
 
-     Observed Test Statistic Calculation:
+     * Observed Test Statistic Calculation:
        Iterates through each column with missing data.
        Creates a missingness indicator (1 if missing, 0 if observed).
        Computes Spearman’s correlation between the missing indicator and the row mean.
        Takes the absolute value of the correlation and sums it across columns to generate the test statistic.
 
-     Permutation Testing:
+     * Permutation Testing:
        Randomly permutes the missing indicator for each column and recomputes the test statistic.
        Repeats the process num_permutations times to create a null distribution.
 
-     Statistical Decision:
+     * Statistical Decision:
        The p-value is calculated as the proportion of permuted test statistics greater than or equal to the observed statistic.
        If p ≥ 0.05, the missingness mechanism is likely MCAR. Otherwise, the data may be Missing At Random (MAR) or Missing Not At Random (MNAR).
 
   Reference: Janssen et al. (2010)
 
 - **em_fiml**
-  A method of imputing values by maximizing the expected values using full information maximum liklihood (FIML).
-  Procedure:
-    Data Preparation:
+  A method of imputing values by maximizing the expected values using full information maximum likelihood (FIML).
+  - Procedure:
+    * Data Preparation:
       Create a copy of the input dataset to preserve the original.
       Extract column names for reference.
       Compute initial estimates of the mean and covariance matrix, ignoring missing values.
 
-    Full Information Maximum Likelihood (FIML) Imputation Using EM:
-      E-Step: Expectation of Missing Values
-        Iterate through each row of the dataset:
-          Identify missing (`missing_mask`) and observed (`observed_mask`) values.
-          Extract observed values from current dataset.
-          Partition overall mean vector into observed ('mu_obs') and missing ('mu_mis') parts.
-          Partition the covariance matrix into submatricies:
-             ('sigma_oo'): Covarince amove observed variables. 
-             ('sigma_mo'): Covariance between missing and observed variables..
-          Compute the psuedo-inverse of ('sigma_00') for numerical stability.
-          Compute the conditional expectation for the missing values using:
-               E[X_miss | X_obs] = μ_miss + Σ_miss,obs Σ_obs⁻¹ (X_obs - μ_obs)
-          Update the imputed dataset with these conditional expectations.
+    * Full Information Maximum Likelihood (FIML) Imputation Using EM:
+      - E-Step: Expectation of Missing Values
+        * Iterate through each row of the dataset:
+          - Identify missing (`missing_mask`) and observed (`observed_mask`) values.
+          - Extract observed values from the current dataset.
+          - Partition overall mean vector into observed ('mu_obs') and missing ('mu_mis') parts.
+          - Partition the covariance matrix into submatrices:
+             * ('sigma_oo'): Covariance matrix among observed variables. 
+             * ('sigma_mo'): Covariance between missing and observed variables..
+          - Compute the pseudo-inverse of ('sigma_00') for numerical stability.
+          - Compute the conditional expectation for the missing values using:
+              * E[X_miss | X_obs] = μ_miss + Σ_miss,obs Σ_obs⁻¹ (X_obs - μ_obs)
+          - Update the imputed dataset with these conditional expectations.
 
-    M-Step: Maximization of Parameter Estimates
-       Re-estimate the mean and covariance matrix from the imputed dataset ('data_filled').
+    * M-Step: Maximization of Parameter Estimates
+      -  Re-estimate the mean and covariance matrix from the imputed dataset ('data_filled').
 
-    Convergence Check and Iteration Control:
-       Compare new estimates to previous ones.
-       If changes in mean and covariance are within tolerance (`tol`), terminate early.
-       Otherwise, continue iterating until `max_iter` is reached. 
+    * Convergence Check and Iteration Control:
+      - Compare new estimates to previous ones.
+      - If changes in mean and covariance are within tolerance (`tol`), terminate early.
+      - Otherwise, continue iterating until `max_iter` is reached. 
 
   Reference: Little & Rubin (2002)
 
-### Installation
+## Installation
 
 ```
 # git
@@ -282,6 +279,7 @@ pip install missdat
         [100 rows x 1 columns]
 
 ```
+
 
 
 
