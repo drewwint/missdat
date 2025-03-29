@@ -1,14 +1,24 @@
 # missdat: a package for missing data diagnostics and estimating missing values
 
+## Overview
+
+`missdat` is a Python package designed to assist in diagnosing and handling missing data within datasets. It provides tools for:
+
+- **Diagnosing Missing Data:** Assess the patterns and extent of missingness.
+- **Testing for Missing Completely at Random (MCAR):** Determine if the missing data mechanism is random.
+- **Estimating Missing Values:** Impute missing data points using statistical methods.
+
+By integrating `missdat` into your data analysis workflow, you can make informed decisions about handling missing data, leading to more robust statistical inferences.
+
+
 ## What is missdat? 
 **missdat** is a Python package that provide usefull tools to quickly assess missing data and provide the user with information on how to best address missingness to improve statistical inferences. Specifically These functions allow the user to perform missing data diagnostics, run a test to deterine if data is Missing Completely at Random (MCAR), and estimate the most likley value for that missing data point (currently only maximizing the expected values with Full Information Maximum Liklihood [FIML]). 
 
-References: 
-The MCAR test citation: Little, R. J. A. (1988). A test of missing completely at random for 
-    multivariate data with missing values. Journal of the American Statistical 
-    Association, 83(404), 1198-1202.
-
-The missingness descriptive diagnostics and estimating values by expectation maximixation are described in these citations: Enders (2010), Janssen et al. (2010), and Little & Rubin (2019).
+## References
+- Enders, C. K. (2010). *Applied Missing Data Analysis*. Guilford Press.
+- Janssen, K. J., et al. (2010). Missing covariate data methods for logistic regression: a comparison of approaches in a prediction model context. *Journal of Clinical Epidemiology, 63*(7), 721–729.
+- Little, R. J. A., & Rubin, D. B. (2002). *Statistical Analysis with Missing Data*. Wiley.
+- Little, R. J. A. (1988). A test of missing completely at random for multivariate data with missing values. Journal of the American Statistical Association, 83(404), 1198-1202.
 
 ### Functions
 - **miss_diagnostics**
@@ -41,7 +51,7 @@ The missingness descriptive diagnostics and estimating values by expectation max
     - Assessing missingness at both the item and pattern levels to decide on appropriate imputation strategies
 
 - **mcar_test**
-  A statistical test for randomness in missing data patterns.
+  A statistical test for randomness in missing data patterns using Little's MCAR test to quantitate evidence of MCAR. 
   Procedure:
      Missing Data Pattern Identification:
        The function first identifies unique missingness patterns in the dataset 
@@ -73,6 +83,26 @@ The missingness descriptive diagnostics and estimating values by expectation max
   This function is useful for:
     - Determining if missing data in a dataset is MCAR quantitatively
     - Informing how to redress missing data 
+
+- **mcar_test_np**
+  A non-parametric MCAR test using permutation based approach. 
+  Procedure: 
+     Row Mean Calculation: 
+       Computes the mean for each row, ignoring NaN values.
+
+     Observed Test Statistic Calculation:
+       Iterates through each column with missing data.
+       Creates a missingness indicator (1 if missing, 0 if observed).
+       Computes Spearman’s correlation between the missing indicator and the row mean.
+       Takes the absolute value of the correlation and sums it across columns to generate the test statistic.
+
+     Permutation Testing:
+       Randomly permutes the missing indicator for each column and recomputes the test statistic.
+       Repeats the process num_permutations times to create a null distribution.
+
+     Statistical Decision:
+       The p-value is calculated as the proportion of permuted test statistics greater than or equal to the observed statistic.
+       If p ≥ 0.05, the missingness mechanism is likely MCAR. Otherwise, the data may be Missing At Random (MAR) or Missing Not At Random (MNAR).
 
 - **em_fiml**
   A method of imputing values by maximizing the expected values using full information maximum liklihood (FIML).
@@ -217,5 +247,14 @@ pip install missdat
        99 -0.234587 -0.023814  0.629629
 
        [100 rows x 3 columns]
+
 ```
+
+## References
+
+- Enders, C. K. (2010). *Applied Missing Data Analysis*. Guilford Press.
+- Janssen, K. J., et al. (2010). Missing covariate data methods for logistic regression: a comparison of approaches in a prediction model context. *Journal of Clinical Epidemiology, 63*(7), 721–729.
+- Little, R. J. A., & Rubin, D. B. (2002). *Statistical Analysis with Missing Data*. Wiley.
+
+
 
