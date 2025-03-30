@@ -12,6 +12,9 @@ By integrating `missdat` into your data analysis workflow, you can make informed
 ## What is missdat? 
 **missdat** is a Python package that provides useful tools to quickly assess missing data and provide the user with information on how to redress missingness to improve statistical inferences. Specifically, these functions allow the user to perform missing data diagnostics, run a test to determine if data is Missing Completely at Random (MCAR), and estimate the most likely value for that missing data point (currently only maximizing the expected values with Full Information Maximum Likelihood [FIML]). 
 
+## Tutorial
+- [Collab Notebook](https://colab.research.google.com/drive/1Dh8Dxf5srIofbsN9KEs1uU1-IAD1pGwV?usp=sharing)
+
 ## References
 - Enders, C. K. (2010). *Applied Missing Data Analysis*. Guilford Press.
 - Janssen, K. J., et al. (2010). Missing covariate data methods for logistic regression: a comparison of approaches in a prediction model context. *Journal of Clinical Epidemiology, 63*(7), 721–729.
@@ -139,6 +142,12 @@ By integrating `missdat` into your data analysis workflow, you can make informed
       - Otherwise, continue iterating until `max_iter` is reached. 
 
   Reference: Little & Rubin (2002)
+
+- **miss_ind**
+  Identifying which participants have missing data and returning a dataframe column indicating if there was any missing data. 
+  - This can be used as an additional control in analysis for variance in imputation that can be explained by cases that have missing values. 
+  
+  Reference: Morvan & Varoquaux (2024) 
 
 ## Installation
 
