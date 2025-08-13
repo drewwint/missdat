@@ -1,5 +1,7 @@
 # missdat: a package for missing data diagnostics and estimating missing values
 
+<a href="https://pepy.tech/projects/missdat"><img src="https://static.pepy.tech/badge/missdat" alt="PyPI Downloads"></a>
+
 ## Overview
 `missdat` is a Python package designed to assist in diagnosing and handling missing data within datasets. It provides tools for:
 
